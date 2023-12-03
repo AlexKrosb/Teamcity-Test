@@ -1,0 +1,16 @@
+### 0. Generate auth token
+GET http://admin:admin@localhost:8111/authenticationTest.html?csrf
+Accept: application/json
+
+> {%
+    client.global.set("token", response.body);
+%}
+
+###
+DELETE http://admin:admin@localhost:8111/app/rest/projects/id:zhjZgEZzuL
+Content-Type: application/json
+Accept: application/json
+X-TC-CSRF-Token: {{token}}
+
+
+
