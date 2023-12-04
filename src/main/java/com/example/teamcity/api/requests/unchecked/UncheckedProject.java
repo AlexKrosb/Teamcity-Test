@@ -1,5 +1,8 @@
 package com.example.teamcity.api.requests.unchecked;
 
+import com.example.teamcity.api.generators.RandomData;
+import com.example.teamcity.api.models.NewProjectDescription;
+import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.requests.CrudInterface;
 import com.example.teamcity.api.requests.Request;
 import io.restassured.response.Response;
@@ -8,7 +11,7 @@ import io.restassured.specification.RequestSpecification;
 import static io.restassured.RestAssured.given;
 
 public class UncheckedProject extends Request implements CrudInterface {
-    private static final String PROJECT_ENDPOINT = "/app/rest/projects";
+    public static final String PROJECT_ENDPOINT = "/app/rest/projects";
 
     public UncheckedProject(RequestSpecification spec) {
         super(spec);
@@ -37,5 +40,18 @@ public class UncheckedProject extends Request implements CrudInterface {
         return given()
                 .spec(spec)
                 .delete(PROJECT_ENDPOINT + "/id:" + id);
+    }
+    public Response createUncheckedProjectWithParameter(String name, String locator, String id ) {
+        var newProjectDescription = NewProjectDescription.builder()
+                .parentProject(Project.builder().locator(locator).build())
+                .name(name)
+                .id(id)
+                .copyAllAssociatedSettings(true)
+                .build();
+
+        return given()
+                .spec(spec)
+                .body(newProjectDescription)
+                .post(PROJECT_ENDPOINT);
     }
 }

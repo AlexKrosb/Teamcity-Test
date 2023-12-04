@@ -1,11 +1,17 @@
 package com.example.teamcity.api.requests.checked;
 
 import com.example.teamcity.api.models.BuildType;
+import com.example.teamcity.api.models.NewProjectDescription;
+import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.requests.CrudInterface;
 import com.example.teamcity.api.requests.Request;
 import com.example.teamcity.api.requests.unchecked.UncheckedBuildConfig;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
+
+import static com.example.teamcity.api.requests.unchecked.UncheckedBuildConfig.BUILD_CONFIG_ENDPOINT;
+import static io.restassured.RestAssured.given;
 
 public class CheckedBuildConfig extends Request implements CrudInterface {
     public CheckedBuildConfig(RequestSpecification spec) {
@@ -34,5 +40,18 @@ public class CheckedBuildConfig extends Request implements CrudInterface {
         return new UncheckedBuildConfig(spec).delete(id)
                 .then().assertThat().statusCode(HttpStatus.SC_NO_CONTENT)
                 .extract().asString();
+    }
+
+    public Response createCheckedBuildConfigWithParameter(String buildTypeId, String name, String projectId ) {
+        var newBuildType = BuildType.builder()
+                .id(buildTypeId)
+                .project(NewProjectDescription.builder().id(projectId).build())
+                .name(name)
+                .build();
+
+        return given()
+                .spec(spec)
+                .body(newBuildType)
+                .post(BUILD_CONFIG_ENDPOINT);
     }
 }
