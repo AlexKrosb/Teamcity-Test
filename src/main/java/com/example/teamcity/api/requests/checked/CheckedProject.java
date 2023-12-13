@@ -45,19 +45,4 @@ public class CheckedProject extends Request implements CrudInterface {
                 .then().assertThat().statusCode(HttpStatus.SC_OK)
                 .extract().asString();
     }
-    public Project createCheckedProjectWithParameter(String name, String locator, String id ) {
-        var newProjectDescription = NewProjectDescription.builder()
-                .parentProject(Project.builder().locator(locator).build())
-                .name(name)
-                .id(id)
-                .copyAllAssociatedSettings(true)
-                .build();
-
-        return given()
-                .spec(spec)
-                .body(newProjectDescription)
-                .post(PROJECT_ENDPOINT)
-                .then()
-                .extract().as(Project.class);
-    }
 }

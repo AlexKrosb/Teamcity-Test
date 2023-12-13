@@ -36,17 +36,4 @@ public class UncheckedBuildConfig extends Request implements CrudInterface {
     public Response delete(String id) {
         return given().spec(spec).delete(BUILD_CONFIG_ENDPOINT + "/id:" + id);
     }
-
-    public Response createUncheckedBuildConfigWithParameter(String buildTypeId, String name, String projectId ) {
-        var newBuildType = BuildType.builder()
-                .id(buildTypeId)
-                .project(NewProjectDescription.builder().id(projectId).build())
-                .name(name)
-                .build();
-
-        return given()
-                .spec(spec)
-                .body(newBuildType)
-                .post(BUILD_CONFIG_ENDPOINT);
-    }
 }

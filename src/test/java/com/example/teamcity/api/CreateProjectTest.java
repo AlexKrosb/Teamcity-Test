@@ -10,7 +10,7 @@ import org.apache.http.HttpStatus;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class CreateProjectTest extends BaseApiTest{
+public class CreateProjectTest extends BaseApiTest {
 
     /*
     Positive cases
@@ -27,9 +27,12 @@ public class CreateProjectTest extends BaseApiTest{
                 .authSpec(testData.getUser()))
                 .create(testData.getProject());
 
+        var testDataForHeirOfProject = testDataStorage.addTestData().getProject();
+        testDataForHeirOfProject.getParentProject().setLocator(project.getId());
+
         var heirOfProject = new CheckedProject(Specifications.getSpec()
                 .authSpec(testData.getUser()))
-                .createCheckedProjectWithParameter(RandomData.getString(), project.getId(), RandomData.getString());
+                .create(testDataForHeirOfProject);
 
         softy.assertThat(heirOfProject.getParentProjectId()).isEqualTo(testData.getProject().getId());
     }
@@ -46,13 +49,18 @@ public class CreateProjectTest extends BaseApiTest{
                 .authSpec(testData.getUser()))
                 .create(testData.getProject());
 
+        var testDataForHeirOfProject = testDataStorage.addTestData().getProject();
+        testDataForHeirOfProject.getParentProject().setLocator(project.getId());
+        testDataForHeirOfProject.setName(project.getName());
+
         var heirOfProject = new CheckedProject(Specifications.getSpec()
                 .authSpec(testData.getUser()))
-                .createCheckedProjectWithParameter(project.getName(), project.getId(), RandomData.getString());
+                .create(testDataForHeirOfProject);
 
         softy.assertThat(heirOfProject.getName()).isEqualTo(testData.getProject().getName());
     }
 
+    //Проверка валидации имени проекта
     @DataProvider(name = "projectTestCorrectSymbols")
     public Object[][] projectTestCorrectSymbols() {
         return new Object[][]{
@@ -62,22 +70,24 @@ public class CreateProjectTest extends BaseApiTest{
                 {" User123!ComplexИмя_Проекта@ c "}
         };
     }
+
     @Test(dataProvider = "projectTestCorrectSymbols")
     public void CheckValidationProjectName(String projectName) {
-
 
         var testData = testDataStorage.addTestData();
         testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
 
         checkedWithSuperUser.getUserRequest().create(testData.getUser());
+        testData.getProject().setName(projectName);
 
-        var project1 = new CheckedProject(Specifications.getSpec()
+        var project = new CheckedProject(Specifications.getSpec()
                 .authSpec(testData.getUser()))
-                .createCheckedProjectWithParameter(projectName, "_Root", RandomData.getString());
+                .create(testData.getProject());
 
-        softy.assertThat(project1.getName()).isEqualTo(testData.getProject().getName());
+        softy.assertThat(project.getName()).isEqualTo(testData.getProject().getName());
     }
 
+    //Проверка валидации имени проекта - граничные
     @DataProvider(name = "checkProjectNameValidationIsCorrectly")
     public Object[][] checkProjectNameValidationIsCorrectly() {
         return new Object[][]{
@@ -87,44 +97,45 @@ public class CreateProjectTest extends BaseApiTest{
                 //Проверка на граничное значение - максимальное значение
         };
     }
+
     @Test(dataProvider = "checkProjectNameValidationIsCorrectly")
     public void checkProjectNameValidationIsCorrectly(String projectName) {
         var testData = testDataStorage.addTestData();
         testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
-        checkedWithSuperUser.getUserRequest().create(testData.getUser());
 
-        new UncheckedProject(Specifications.getSpec().authSpec(testData.getUser()))
-                .createUncheckedProjectWithParameter(projectName, "_Root", RandomData.getString())
-                .then().assertThat().statusCode(HttpStatus.SC_OK);
+        checkedWithSuperUser.getUserRequest().create(testData.getUser());
+        testData.getProject().setName(projectName);
+
+        var project = new CheckedProject(Specifications.getSpec()
+                .authSpec(testData.getUser()))
+                .create(testData.getProject());
+
+        softy.assertThat(project.getName()).isEqualTo(testData.getProject().getName());
     }
 
     @DataProvider(name = "checkValidationIdOfProject")
     public Object[][] checkValidationIdOfProject() {
         return new Object[][]{
                 {"A"},
-                {"Awertyuiopgfdsertyuytuijl"+
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl"
-                },
+                {RandomData.getLongString(125)},
                 {"ABCDEFGHIGKLMNOPQRSTUVWXYZ"},
                 {"1234567890"}
         };
     }
+
     @Test(dataProvider = "checkValidationIdOfProject")
     public void checkValidationIdOfProject(String ProjectId) {
         var testData = testDataStorage.addTestData();
         testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
-        checkedWithSuperUser.getUserRequest().create(testData.getUser());
 
-        new UncheckedProject(Specifications.getSpec().authSpec(testData.getUser()))
-                .createUncheckedProjectWithParameter(RandomData.getString(), "_Root", ProjectId)
-                .then().assertThat().statusCode(HttpStatus.SC_OK);
+        checkedWithSuperUser.getUserRequest().create(testData.getUser());
+        testData.getProject().setId(ProjectId);
+
+        var project = new CheckedProject(Specifications.getSpec()
+                .authSpec(testData.getUser()))
+                .create(testData.getProject());
+
+        softy.assertThat(project.getId()).isEqualTo(testData.getProject().getId());
     }
     /*
     Negative cases
@@ -133,21 +144,28 @@ public class CreateProjectTest extends BaseApiTest{
     // Проверка, что нельзя создать новый проект в Parent project с именем проекта который был создан ранее
     @Test
     public void CheckProjectWithThisNameAlreadyExists() {
-        var testData = testDataStorage.addTestData();
-        testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
-        checkedWithSuperUser.getUserRequest().create(testData.getUser());
+        var testData1 = testDataStorage.addTestData();
+        testData1.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
+        checkedWithSuperUser.getUserRequest().create(testData1.getUser());
 
         var project = new CheckedProject(Specifications.getSpec()
-                .authSpec(testData.getUser()))
-                .create(testData.getProject());
+                .authSpec(testData1.getUser()))
+                .create(testData1.getProject());
+
+        var testData2 = testDataStorage.addTestData().getProject();
+        testData2.getParentProject().setLocator(project.getId());
 
         var heirOfProject = new CheckedProject(Specifications.getSpec()
-                .authSpec(testData.getUser()))
-                .createCheckedProjectWithParameter(RandomData.getString(), project.getId(), RandomData.getString());
+                .authSpec(testData1.getUser()))
+                .create(testData2);
+
+        var testData3 = testDataStorage.addTestData().getProject();
+        testData3.getParentProject().setLocator(project.getId());
+        testData3.setName(heirOfProject.getName());
 
         new UncheckedProject(Specifications.getSpec()
-                .authSpec(testData.getUser()))
-                .createUncheckedProjectWithParameter(heirOfProject.getName(), project.getId(),RandomData.getString())
+                .authSpec(testData1.getUser()))
+                .create(testData3)
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
 
@@ -167,47 +185,44 @@ public class CreateProjectTest extends BaseApiTest{
                  */
         };
     }
+
     @Test(dataProvider = "projectNameTestData")
     public void checkProjectNameValidationIsNotCorrectly(String projectName) {
         var testData = testDataStorage.addTestData();
         testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
         checkedWithSuperUser.getUserRequest().create(testData.getUser());
 
+        testData.getProject().setName(projectName);
+
         new UncheckedProject(Specifications.getSpec().authSpec(testData.getUser()))
-                .createUncheckedProjectWithParameter(projectName, "2", "2")
+                .create(testData)
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
-
     //Бага ? Должен быть 400 статус но 500 везде
     @DataProvider(name = "checkValidationIdOfProjectIsNotCorrect")
     public Object[][] checkValidationIdOfProjectIsNotCorrect() {
         return new Object[][]{
                 {""},
                 {" "},
-                {"Awertyuiopgfdsertyuytuijl"+
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" +
-                        "Awertyuiopgfdsertyuytuijl" + "a"
-                },
+                {RandomData.getLongString(126)},
                 {"\"name\": \"! @ # $ % ^ & * ( ) _ + - = { } [ ] ; : ' \\\" , / > / ?\","},
                 {" User123!ComplexИмя_Проекта@ c "}
         };
     }
+
     @Test(dataProvider = "checkValidationIdOfProjectIsNotCorrect")
     public void checkValidationIdOfProjectIsNotCorrect(String ProjectId) {
         var testData = testDataStorage.addTestData();
         testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
         checkedWithSuperUser.getUserRequest().create(testData.getUser());
 
+        testData.getProject().setId(ProjectId);
+
         new UncheckedProject(Specifications.getSpec().authSpec(testData.getUser()))
-                .createUncheckedProjectWithParameter(RandomData.getString(), "_Root", ProjectId)
+                .create(testData)
                 .then().assertThat().statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
     }
+
     //Проверка что пустой locator нельзя отправить
     @Test
     public void CheckThatLocatorCannotBeEmpty() {
@@ -215,30 +230,37 @@ public class CreateProjectTest extends BaseApiTest{
         testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
         checkedWithSuperUser.getUserRequest().create(testData.getUser());
 
+        testData.getProject().getParentProject().setLocator("");
+
         new UncheckedProject(Specifications.getSpec().authSpec(testData.getUser()))
-                .createUncheckedProjectWithParameter(RandomData.getString(), "", "ProjectId")
+                .create(testData)
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
 
     //Проверка - Project ID "ProjectId" is already used by another project
     @Test
     public void CheckThatIdCannotBeDublicate() {
-        var testData = testDataStorage.addTestData();
-        testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
-        checkedWithSuperUser.getUserRequest().create(testData.getUser());
+        var testData1 = testDataStorage.addTestData();
+        var testData2 = testDataStorage.addTestData();
+        testData1.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
+        checkedWithSuperUser.getUserRequest().create(testData1.getUser());
 
-        new UncheckedProject(Specifications.getSpec().authSpec(testData.getUser()))
-                .createUncheckedProjectWithParameter(RandomData.getString(), "_Root", "ProjectId")
+        new UncheckedProject(Specifications.getSpec().authSpec(testData1.getUser()))
+                .create(testData1.getProject())
                 .then().assertThat().statusCode(HttpStatus.SC_OK);
 
-        new UncheckedProject(Specifications.getSpec().authSpec(testData.getUser()))
-                .createUncheckedProjectWithParameter(RandomData.getString(), "_Root", "ProjectId")
+        testData2.getProject().setId(testData1.getProject().getId());
+
+        new UncheckedProject(Specifications.getSpec().authSpec(testData1.getUser()))
+                .create(testData2.getProject())
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
-    // Проверка, что проект не может иметь тожде имя в том же Project parent
+
+    // Проверка, что проект не может иметь тоже имя в том же Project parent
     @Test
     public void CheckNameWithThisNameAlreadyExist() {
         var testData = testDataStorage.addTestData();
+        var testData2 = testDataStorage.addTestData();
         testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
         checkedWithSuperUser.getUserRequest().create(testData.getUser());
 
@@ -246,11 +268,14 @@ public class CreateProjectTest extends BaseApiTest{
                 .authSpec(testData.getUser()))
                 .create(testData.getProject());
 
+        testData2.getProject().setName(project.getName());
+
         new UncheckedProject(Specifications.getSpec()
                 .authSpec(testData.getUser()))
-                .createUncheckedProjectWithParameter(project.getName(), "_Root", RandomData.getString())
+                .create(testData2.getProject())
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
+
     // Проверка, что нельзя создать проект с несуществующим локатором
     @Test
     public void checkNoProjectFoundByNotExistedLocator() {
@@ -258,9 +283,11 @@ public class CreateProjectTest extends BaseApiTest{
         testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.SYSTEM_ADMIN, "g"));
         checkedWithSuperUser.getUserRequest().create(testData.getUser());
 
+        testData.getProject().getParentProject().setLocator(RandomData.getString());
+
         new UncheckedProject(Specifications.getSpec()
                 .authSpec(testData.getUser()))
-                .createUncheckedProjectWithParameter(RandomData.getString(), RandomData.getString(), RandomData.getString())
+                .create(testData.getProject())
                 .then().assertThat().statusCode(HttpStatus.SC_NOT_FOUND);
     }
 }

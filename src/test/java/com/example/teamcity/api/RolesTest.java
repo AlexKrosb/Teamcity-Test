@@ -12,7 +12,7 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
 
-public class RolesTest extends BaseApiTest{
+public class RolesTest extends BaseApiTest {
     //Неавторизованный юзер не имеет прав создать проект
     @Test
     public void unauthorizedUserShouldNotHaveRightToCreateProject() {
@@ -29,6 +29,7 @@ public class RolesTest extends BaseApiTest{
                 .body(Matchers.containsString("No project found by locator"
                         + " 'count:1,id:" + testData.getProject().getId() + "'"));
     }
+
     //System admin имеет права создать проект
     @Test
     public void systemAdminShouldHaveRightsToCreateProject() {
@@ -50,7 +51,7 @@ public class RolesTest extends BaseApiTest{
         var testData = testDataStorage.addTestData();
 
         checkedWithSuperUser.getProjectRequest()
-                        .create(testData.getProject());
+                .create(testData.getProject());
 
         testData.getUser().setRoles(TestDataGenerator.generateRoles(Role.PROJECT_ADMIN, "p:" + testData.getProject().getId()));
 
@@ -62,6 +63,7 @@ public class RolesTest extends BaseApiTest{
 
         softy.assertThat(buildConfig.getId()).isEqualTo(testData.getBuildtype().getId());
     }
+
     //Project admin не имеет права создать билдконфиг в другом проекте.
     /*
     ALERT _ _ _ _ _ BUG!BUG!BUG!BUG!BUG!BUG! Expected status code <400> but was <200>.
@@ -89,6 +91,7 @@ public class RolesTest extends BaseApiTest{
                 .create(firstTestData.getBuildtype())
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
+
     //Project developer не имеет прав создать проект при любом скоуп.
     @Test
     public void projectDeveloperShouldNotHaveRightsToCreateProject() {
@@ -111,6 +114,7 @@ public class RolesTest extends BaseApiTest{
                 .authSpec(testData2.getUser()))
                 .create(testData2.getProject()).then().assertThat().statusCode(HttpStatus.SC_FORBIDDEN);
     }
+
     //Project viewer не имеет прав создать проект при любом скоуп.
     @Test
     public void projectViewerShouldNotHaveRightsToCreateProject() {
@@ -133,6 +137,7 @@ public class RolesTest extends BaseApiTest{
                 .authSpec(testData2.getUser()))
                 .create(testData2.getProject()).then().assertThat().statusCode(HttpStatus.SC_FORBIDDEN);
     }
+
     //Agent manager не имеет прав создать проект при любом скоуп.
     /*
     ALERT _ _ _ _ _ BUG!BUG!BUG!BUG!BUG!BUG! Expected status code <403> but was <200>.
