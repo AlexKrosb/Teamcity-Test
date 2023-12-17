@@ -18,7 +18,7 @@ X-TC-CSRF-Token: {{token}}
 
 {
   "parentProject": {
-    "locator": "_Root"
+    "locator": "DkFuqcGcoi"
   },
   "name": "{{projectId}}",
   "id": "{{projectId}}",
