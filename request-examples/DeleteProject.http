@@ -7,7 +7,7 @@ Accept: application/json
 %}
 
 ###
-DELETE http://admin:admin@localhost:8111/app/rest/projects/id:zhjZgEZzuL
+DELETE http://admin:admin@localhost:8111/app/rest/projects/id:
 Content-Type: application/json
 Accept: application/json
 X-TC-CSRF-Token: {{token}}
