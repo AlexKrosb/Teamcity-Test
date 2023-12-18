@@ -15,9 +15,7 @@ import static com.codeborne.selenide.Selenide.elements;
 import static com.codeborne.selenide.Selenide.sleep;
 
 public class ProjectsPage extends FavoritesPage {
-    //куда дели в FAVORITE_PROJECTS_URL mode=builds
     private static final String FAVORITE_PROJECTS_URL = "/favorite/projects";
-    ///&&
     private ElementsCollection subprojects = elements(Selectors.byClass("Subproject__container--Px"));
 
 
@@ -27,6 +25,7 @@ public class ProjectsPage extends FavoritesPage {
         return this;
     }
     public List<ProjectElement> getSubprojects() {
+        waitUntilFavoritePageIsLoaded();
         return generatePageElements(subprojects, ProjectElement::new);
     }
 
