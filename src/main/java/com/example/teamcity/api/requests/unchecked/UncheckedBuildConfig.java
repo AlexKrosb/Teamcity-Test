@@ -1,8 +1,5 @@
 package com.example.teamcity.api.requests.unchecked;
 
-import com.example.teamcity.api.models.BuildType;
-import com.example.teamcity.api.models.NewProjectDescription;
-import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.requests.CrudInterface;
 import com.example.teamcity.api.requests.Request;
 import io.restassured.response.Response;
