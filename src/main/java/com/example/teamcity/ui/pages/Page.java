@@ -19,6 +19,7 @@ public abstract class Page {
     private SelenideElement submitButton = element(Selectors.byType(("submit")));
     private SelenideElement savingWaitingMarker = element(Selectors.byId("saving"));
     private SelenideElement pageWaitingMarker = element(Selectors.byDataTest("ring-loader"));
+
     public void submit() {
         submitButton.click();
         waitUntilDataIsSaved();
