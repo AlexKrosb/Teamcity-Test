@@ -68,7 +68,7 @@ docker run -d                                   \
     aerokube/selenoid:latest-release
 
 image_names=($(awk -F'"' '/"image": "/{print $4}' "$current/config/browsers.json"))
-
+###
 echo "Pull all browser images: $image_names"
 
 for image in "${image_names[@]}"; do
