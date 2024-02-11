@@ -60,7 +60,7 @@ jobs:
 
       - name: Set up TeamCity Server
 
-        run: ./mvnw clean test -Dtest=SetupFirstStartTest#setupTeamCityServerTest
+        run: ./mvnw clean test -Dtest=SetupTest#setupTeamCityServerTest
 
       - name: Print Container Logs
         run: |
