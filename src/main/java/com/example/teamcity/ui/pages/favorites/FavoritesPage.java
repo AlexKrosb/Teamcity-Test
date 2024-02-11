@@ -12,8 +12,15 @@ import static com.codeborne.selenide.Selenide.element;
 public class FavoritesPage extends Page {
 
     private SelenideElement header = element(Selectors.byClass("ProjectPageHeader__title--ih"));
+
+    private final SelenideElement container = element(Selectors.byClass("Subproject__container--Px"));
+
     public void waitUntilFavoritePageIsLoaded() {
         waitUntilPageIsLoaded();
         header.shouldBe(Condition.visible, Duration.ofSeconds(10));
+    }
+
+    public void waitUntilContainerIsLoaded() {
+        container.shouldBe(Condition.visible, Duration.ofSeconds(10));
     }
 }
