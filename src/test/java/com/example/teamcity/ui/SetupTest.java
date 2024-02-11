@@ -15,7 +15,9 @@ public class SetupTest extends BaseUiTest{
     }
     @Test
     public void setupTeamCityAgentTest() {
+
         var testData = testDataStorage.addTestData();
+
         loginAsUser(testData.getUser());
 
         new AgentAuthPage()
