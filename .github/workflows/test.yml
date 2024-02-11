@@ -58,6 +58,9 @@ jobs:
           -p 8111:8111 \
           jetbrains/teamcity-server:2023.11.1
 
+      - name: Debug Information
+        run: mvn clean test -X
+
       - name: Make mvnw executable
         run: chmod +x mvnw
 
