@@ -60,7 +60,9 @@ jobs:
 
       - name: Set up TeamCity Server
 
-        run: ./mvnw clean test -Dtest=SetupTest#startUpTest
+        run:
+        - chmod +x mvnw
+        - ./mvnw clean test -Dtest=SetupTest#startUpTest
 
       - name: Print Container Logs
         run: |
