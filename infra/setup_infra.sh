@@ -62,7 +62,7 @@ docker run -d                                   \
             --name $selenoid_container_name                                 \
             -p 4444:4444                                    \
             -v /var/run/docker.sock:/var/run/docker.sock    \
-            -v $(pwd)/config/:/etc/selenoid/:ro              \
+            -v $(pwd)/infra/:/etc/selenoid/:ro              \
     aerokube/selenoid:latest-release
 
 image_names=($(awk -F'"' '/"image": "/{print $4}' "$(pwd)/config/browsers.json"))
