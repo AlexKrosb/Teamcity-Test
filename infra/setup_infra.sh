@@ -43,10 +43,8 @@ echo "Current directory: $(pwd)"
 
 cd $teamcity_server_workdir
 
-current=$(powershell.exe '$PWD -replace "\\","/" -replace "C", "c"')
-
 docker run -d --name $teamcity_server_container_name  \
-    -v $current/logs:/opt/teamcity/logs  \
+    -v $(pwd)/logs:/opt/teamcity/logs  \
     -p 8111:8111 \
     jetbrains/teamcity-server
 
@@ -59,16 +57,16 @@ echo "Current directory: $(pwd)"
 cd .. && cd selenoid_workdir
 mkdir config
 cp $teamcity_tests_directory/infra/browsers.json config/
-current=$(powershell.exe '$PWD -replace "\\","/" -replace "C", "c"')
+
 docker run -d                                   \
             --name $selenoid_container_name                                 \
             -p 4444:4444                                    \
             -v /var/run/docker.sock:/var/run/docker.sock    \
-            -v $current/config/:/etc/selenoid/:ro              \
+            -v $(pwd)/config/:/etc/selenoid/:ro              \
     aerokube/selenoid:latest-release
 
-image_names=($(awk -F'"' '/"image": "/{print $4}' "$current/config/browsers.json"))
-###
+image_names=($(awk -F'"' '/"image": "/{print $4}' "$(pwd)/config/browsers.json"))
+
 echo "Pull all browser images: $image_names"
 
 for image in "${image_names[@]}"; do
