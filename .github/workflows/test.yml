@@ -58,6 +58,10 @@ jobs:
           -p 8111:8111 \
           jetbrains/teamcity-server:2023.11.1
 
+      - name: Make mvnw executable
+
+        run: chmod +x mvnw
+
       - name: Set up TeamCity Server
 
         run: ./mvnw clean test -Dtest=SetupTest#setupTeamCityServerTest
