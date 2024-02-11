@@ -33,12 +33,10 @@ jobs:
         run: docker pull selenoid/vnc:firefox_89.0
 
       - name: Run Selenoid
-
-
         run: |
           docker run -d --name selenoid \
           -v /var/run/docker.sock:/var/run/docker.sock \
-          -v $(pwd)/infra/:/etc/selenoid/:ro \
+          -v $(pwd)/selenoid/config:/etc/selenoid/:ro \
           -p 4444:4444 \
           aerokube/selenoid:latest-release
 
