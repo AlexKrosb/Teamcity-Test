@@ -61,9 +61,6 @@ jobs:
       - name: Debug Information
         run: mvn clean test -X
 
-      - name: Make mvnw executable
-        run: chmod +x mvnw
-
       - name: Set up TeamCity Server
 
         run: ./mvnw clean test -Dtest=SetupTest#setupTeamCityServerTest
