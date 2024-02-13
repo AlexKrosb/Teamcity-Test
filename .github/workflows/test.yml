@@ -48,7 +48,6 @@ jobs:
           
 
       - name: Run TeamCity Server
-
         run: |
           docker run -u 0 -d --name teamcity-server  \
           -v $(pwd)/tmp/teamcity_server/datadir:/data/teamcity_server/datadir \
@@ -56,12 +55,8 @@ jobs:
           -p 8111:8111 \
           jetbrains/teamcity-server:2023.11.1
 
-      - name: Debug Information
-        run: mvn clean test -X
-
       - name: Set up TeamCity Server
-
-        run: ./mvnw clean test -Dtest=SetupTest#setupTeamCityServerTest
+        run: ./mvnw clean test -Dtest=SetupTest#startUpTest
 
       - name: Print Container Logs
         run: |
