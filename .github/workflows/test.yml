@@ -86,3 +86,6 @@ jobs:
 
       - name: Run API tests
         run: ./mvnw test -DsuiteXmlFile=testng-suites/api-suite.xml
+
+      - name: Run UI tests
+        run: ./mvnw test -DsuiteXmlFile=testng-suites/ui-suite.xml
