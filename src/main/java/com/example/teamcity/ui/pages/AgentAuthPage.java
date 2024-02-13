@@ -11,11 +11,11 @@ import static com.codeborne.selenide.Selenide.$x;
 
 public class AgentAuthPage extends Page{
     private SelenideElement commentField = $x("//*[@data-test='ring-input']//*[contains(@id, 'ring-input')]");
-    private SelenideElement authorizeButton = $x("//button//*[contains(text(), 'Authorize')]");
+    private SelenideElement acceptButton = $x("//button//*[contains(text(), 'Authorize')]");
     private SelenideElement authorizeModalButton = $x("//*[@data-test=\"ring-island-content\"]//button//*[contains(text(), 'Authorize')]");
-    private SelenideElement agentLink = $x("//*[contains(@title, 'Agent name:')]");
+    private SelenideElement agenNametLink = $x("//*[contains(@title, 'Agent name:')]");
     @Getter
-    private SelenideElement authStatus = $x("//*[@data-agent-authorization-status=\"true\"]//span[1]");
+    private SelenideElement agentAuthStatus = $x("//*[@data-agent-authorization-status=\"true\"]//span[1]");
 
     public AgentAuthPage open() {
         Selenide.open("/agents/unauthorized");
@@ -24,15 +24,15 @@ public class AgentAuthPage extends Page{
 
     public AgentAuthPage authTeamCityAgent() {
         waitUntilPageIsLoaded();
-        authorizeButton.click();
+        acceptButton.click();
         waitUntilPageIsLoaded();
         commentField.shouldBe(Condition.enabled, Duration.ofSeconds(10));
         commentField.sendKeys("test");
         waitUntilPageIsLoaded();
         authorizeModalButton.click();
         waitUntilPageIsLoaded();
-        agentLink.click();
-        authStatus.shouldBe(Condition.enabled, Duration.ofSeconds(10));
+        agenNametLink.click();
+        agentAuthStatus.shouldBe(Condition.enabled, Duration.ofSeconds(10));
         return this;
     }
 }

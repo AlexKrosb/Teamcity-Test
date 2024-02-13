@@ -23,6 +23,6 @@ public class SetupTest extends BaseUiTest{
         new AgentAuthPage()
                 .open()
                 .authTeamCityAgent()
-                .getAuthStatus().shouldHave(Condition.text("Authorized"));
+                .getAgentAuthStatus().shouldHave(Condition.text("Authorized"));
     }
 }
