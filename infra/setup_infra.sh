@@ -126,3 +126,4 @@ mvn test -DsuiteXmlFile=testng-suites/api-suite.xml
 echo "Run UI tests"
 mvn test -DsuiteXmlFile=testng-suites/ui-suite.xml
 
+read -p "Press any key"
