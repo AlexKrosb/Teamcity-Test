@@ -39,7 +39,7 @@ jobs:
 
       - name: Run Selenoid
         run: |
-          docker run -d --name selenoid \
+          docker run --name selenoid \
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v $(pwd)/config:/etc/selenoid/:ro \
           -p 4444:4444 \
