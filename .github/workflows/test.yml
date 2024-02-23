@@ -27,7 +27,7 @@ jobs:
           echo -e "host=$HOST:8111\n" >> src/main/resources/config.properties
 
       - name: Pull Selenoid Chrome/Firefox/..
-        run: docker pull selenoid/vnc:firefox_89.0
+        run: docker pull selenoid/vnc:chrome_91.0
 
       - name: Display Current Directory
         run: pwd
