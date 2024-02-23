@@ -52,7 +52,7 @@ jobs:
 
       - name: Run TeamCity Server
         run: |
-          docker run -u 0 --name teamcity-server  \
+          docker run -u 0 -d --name teamcity-server  \
           -v $(pwd)/tmp/teamcity_server/datadir:/data/teamcity_server/datadir \
           -v $(pwd)/tmp/teamcity_server/logs:/opt/teamcity/logs  \
           -p 8111:8111 \
