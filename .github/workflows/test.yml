@@ -81,7 +81,7 @@ jobs:
 
       - name: Set up TeamCity Agent
 
-        run: ./mvnw test -Dtest=SetupTest#setupTeamCityAgentTest
+        run: ./mvnw test -Dtest=AgentsAuthorizedTest#authorizeAgentTest
 
 
       - name: Run API tests

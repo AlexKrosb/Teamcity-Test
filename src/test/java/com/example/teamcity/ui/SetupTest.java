@@ -13,16 +13,4 @@ public class SetupTest extends BaseUiTest{
                 .setupTeamCityServer()
                 .getHeader().shouldHave(Condition.text("Create Administrator Account"));
     }
-    @Test
-    public void setupTeamCityAgentTest() {
-
-        var testData = testDataStorage.addTestData();
-
-        loginAsUser(testData.getUser());
-
-        new AgentAuthPage()
-                .open()
-                .authTeamCityAgent()
-                .getAgentAuthStatus().shouldHave(Condition.text("Authorized"));
-    }
 }
