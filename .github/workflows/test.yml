@@ -29,8 +29,11 @@ jobs:
       - name: Pull Selenoid Chrome/Firefox/..
         run: docker pull selenoid/vnc:firefox_89.0
 
+      - name: Display Current Directory
+        run: pwd
+
       - name: Prepare Selenoid config
-        run: mkdir selenoid && cd selenoid && mkdir config && cp /home/runner/work/Teamcity-tests/Teamcity-tests/infra/browsers.json config/
+        run: mkdir selenoid && cd selenoid && mkdir config && cp /home/runner/work/Teamcity-test/Teamcity-test/infra/browsers.json config/
 
       - name: Run Selenoid
         run: |
