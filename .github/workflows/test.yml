@@ -33,7 +33,7 @@ jobs:
         run: pwd
 
       - name: Prepare Selenoid config
-        run: mkdir selenoid && cd selenoid && mkdir config && cp /home/runner/work/Teamcity-test/Teamcity-test/infra/browsers.json config/
+        run: mkdir selenoid && cd selenoid && mkdir config && cp /home/runner/work/Teamcity-Test/Teamcity-Test/infra/browsers.json config/
 
       - name: Run Selenoid
         run: |
