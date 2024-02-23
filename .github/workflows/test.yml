@@ -37,7 +37,7 @@ jobs:
 
       - name: Run Selenoid
         run: |
-          cd selenoid && ls && docker run --name selenoid \
+          cd selenoid && ls && docker run -d --name selenoid \
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v $(pwd)/config:/etc/selenoid/:ro \
           -p 4444:4444 \
