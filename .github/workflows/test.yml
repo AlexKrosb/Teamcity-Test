@@ -45,7 +45,7 @@ jobs:
 
       - name: Run Selenoid UI
         run: |
-          docker run --name selenoid-ui \
+          docker run -d --name selenoid-ui \
           -p 8080:8080 \
           aerokube/selenoid-ui \
           --selenoid-uri http://$HOST:4444
