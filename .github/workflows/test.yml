@@ -22,10 +22,17 @@ jobs:
         run: |
           echo "HOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)" >> $GITHUB_ENV
 
-
       - name: Setup host config.properties
         run: | 
           echo -e "host=$HOST:8111\n" >> src/main/resources/config.properties
+
+      - name: Run TeamCity Server
+        run: |
+          docker run -u 0 -d --name teamcity-server  \
+          -v $(pwd)/tmp/teamcity_server/datadir:/data/teamcity_server/datadir \
+          -v $(pwd)/tmp/teamcity_server/logs:/opt/teamcity/logs  \
+          -p 8111:8111 \
+          jetbrains/teamcity-server:2023.11.1
 
       - name: Pull Selenoid Chrome/Firefox/..
         run: docker pull selenoid/vnc:firefox_89.0
@@ -38,31 +45,12 @@ jobs:
           -p 4444:4444 \
           aerokube/selenoid:latest-release
 
-      - name: Wait for Selenoid to initialize
-        run: sleep 30
-
-
       - name: Run Selenoid UI
         run: |
           docker run -d --name selenoid-ui \
           -p 8080:8080 \
           aerokube/selenoid-ui \
           --selenoid-uri http://$HOST:4444
-
-      - name: Wait for Selenoid to initialize
-        run: sleep 30
-          
-
-      - name: Run TeamCity Server
-        run: |
-          docker run -u 0 -d --name teamcity-server  \
-          -v $(pwd)/tmp/teamcity_server/datadir:/data/teamcity_server/datadir \
-          -v $(pwd)/tmp/teamcity_server/logs:/opt/teamcity/logs  \
-          -p 8111:8111 \
-          jetbrains/teamcity-server:2023.11.1
-
-      - name: Wait for Selenoid to initialize
-        run: sleep 30
 
       - name: Set execute permissions for mvnw
         run: chmod +x mvnw
@@ -73,9 +61,6 @@ jobs:
       - name: Print Container Logs
         run: |
           docker logs teamcity-server
-
-      - name: Wait for Selenoid to initialize
-        run: sleep 30
 
       - name: Set up superUserToken environment variable and config property
         run: |
@@ -94,9 +79,6 @@ jobs:
       - name: Set up TeamCity Agent
 
         run: ./mvnw test -Dtest=AgentsAuthorizedTest#authorizeAgentTest
-
-      - name: Wait for Selenoid to initialize
-        run: sleep 30
 
       - name: Run API tests
         run: ./mvnw test -DsuiteXmlFile=testng-suites/api-suite.xml
