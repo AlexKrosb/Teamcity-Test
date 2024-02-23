@@ -85,10 +85,10 @@ jobs:
 
 
       - name: Run API tests
-        run: ./mvnw test -DsuiteXmlFile=testng-suites/api-suite.xml -DtestFailureIgnore=false
+        run: ./mvnw test -DsuiteXmlFile=testng-suites/api-suite.xml
 
       - name: Run UI tests
-        run: ./mvnw test -DsuiteXmlFile=testng-suites/ui-suite.xml -DtestFailureIgnore=false
+        run: ./mvnw test -DsuiteXmlFile=testng-suites/ui-suite.xml
 
       - name: Load test report history
         uses: actions/checkout@v4
