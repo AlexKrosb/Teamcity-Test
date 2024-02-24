@@ -41,17 +41,4 @@ public class UncheckedProject extends Request implements CrudInterface {
                 .spec(spec)
                 .delete(PROJECT_ENDPOINT + "/id:" + id);
     }
-    public Response createUncheckedProjectWithParameter(String name, String locator, String id ) {
-        var newProjectDescription = NewProjectDescription.builder()
-                .parentProject(Project.builder().locator(locator).build())
-                .name(name)
-                .id(id)
-                .copyAllAssociatedSettings(true)
-                .build();
-
-        return given()
-                .spec(spec)
-                .body(newProjectDescription)
-                .post(PROJECT_ENDPOINT);
-    }
 }
