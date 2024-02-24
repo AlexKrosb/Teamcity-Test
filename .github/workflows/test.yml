@@ -116,7 +116,8 @@ jobs:
       - name: Install Swagger Coverage Commandline
         run: |
           wget https://github.com/viclovsky/swagger-coverage/releases/download/1.4.2/swagger-coverage-1.4.2.zip
-          unzip swagger-coverage-1.4.2.zip .swagger-coverage-commandline
+          mkdir -p .swagger-coverage-commandline
+          unzip swagger-coverage-1.4.2.zip -d .swagger-coverage-commandline
           chmod +x .swagger-coverage-commandline/bin/swagger-coverage-commandline
 
       - name: Run Swagger coverage
