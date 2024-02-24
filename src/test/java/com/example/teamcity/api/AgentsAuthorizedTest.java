@@ -12,7 +12,9 @@ public class AgentsAuthorizedTest extends BaseApiTest{
             checkedWithSuperUser.getAgentsRequest().update(agentsList.getAgent().get(0).getId());
         }
         catch (IndexOutOfBoundsException e) {
+
             System.out.println("Teamcity Agent has not been authorized");
+
             }
 
     }
