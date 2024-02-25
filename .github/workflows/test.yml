@@ -95,6 +95,9 @@ jobs:
       - name: Change permissions
         run: chmod +x ${{ github.workspace }}/swagger-coverage-commandline/bin/swagger-coverage-commandline
 
+      - name: Check Swagger JSON Accessibility
+        run: curl -I http://${{ env.HOST }}:8111/app/rest/swagger.json
+
       - name: Run Swagger coverage
         if: always()
         run: ${{ github.workspace }}/swagger-coverage-commandline/bin/swagger-coverage-commandline -s http://${{ env.HOST }}:8111/app/rest/swagger.json -i target/swagger-coverage-output
