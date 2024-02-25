@@ -113,16 +113,10 @@ jobs:
             publish_branch: gh-pages
             publish_dir: allure-history
 
-      - name: Install Swagger Coverage Commandline
-        run: |
-          wget https://github.com/viclovsky/swagger-coverage/releases/download/1.4.2/swagger-coverage-1.4.2.zip
-          mkdir -p .swagger-coverage-commandline
-          unzip swagger-coverage-1.4.2.zip -d .swagger-coverage-commandline
-          chmod +x .swagger-coverage-commandline/swagger-coverage-commandline-1.4.2/bin/swagger-coverage-commandline
-
       - name: Run Swagger coverage
         if: always()
-        run: .swagger-coverage-commandline/bin/swagger-coverage-commandline -s http://$HOST:8111/app/rest/swagger.json -i target/swagger-coverage-output
+        run:  chmod +x .swagger-coverage-commandline/bin/swagger-coverage-commandline && .swagger-coverage-commandline/bin/swagger-coverage-commandline \
+              -s http://$HOST:8111/app/rest/swagger.json -i target/swagger-coverage-output
 
       - name: Save Swagger coverage
         uses: actions/upload-artifact@v4
