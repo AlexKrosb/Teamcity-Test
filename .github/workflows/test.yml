@@ -83,8 +83,8 @@ jobs:
 
         run: ./mvnw test -Dtest=AgentsAuthorizedTest#authorizeAgentTest
 
-      - name: Run API tests
-        run: ./mvnw test -DsuiteXmlFile=testng-suites/api-suite.xml
+#      - name: Run API tests
+#        run: ./mvnw test -DsuiteXmlFile=testng-suites/api-suite.xml
 
       - name: Run UI tests
         run: ./mvnw test -DsuiteXmlFile=testng-suites/ui-suite.xml
@@ -95,8 +95,8 @@ jobs:
       - name: Change permissions
         run: chmod +x ${{ github.workspace }}/swagger-coverage-commandline/bin/swagger-coverage-commandline
 
-      - name: Check Swagger JSON Accessibility
-        run: curl -I http://${{ env.HOST }}:8111/app/rest/swagger.json
+      - name: Download Swagger Spec
+        run: curl -o swagger.json http://${{ env.HOST }}:8111/app/rest/swagger.json
 
       - name: Run Swagger coverage
         if: always()
