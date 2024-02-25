@@ -18,7 +18,7 @@ X-TC-CSRF-Token: {{token}}
 
 {
   "parentProject": {
-    "locator": "DkFuqcGcoi"
+    "locator": "_Root"
   },
   "name": "{{projectId}}",
   "id": "{{projectId}}",
@@ -82,3 +82,20 @@ Accept: application/json
 X-TC-CSRF-Token: {{token}}
 
 
+### 5. Check project status
+GET http://admin:admin@localhost:8111/app/rest/projects/id:TestPjsCLCbFgC
+Content-Type: application/json
+Accept: application/json
+X-TC-CSRF-Token: {{token}}
+
+### 6. Check project
+GET http://admin:admin@localhost:8111/app/rest/projects
+Content-Type: application/json
+Accept: application/json
+X-TC-CSRF-Token: {{token}}
+
+### 7. GET List Build Configurations of Project
+GET http://admin:admin@localhost:8111/app/rest/projects/test_KrZfnmRRje/buildTypes
+Content-Type: application/json
+Accept: application/json
+X-TC-CSRF-Token: {{token}}
