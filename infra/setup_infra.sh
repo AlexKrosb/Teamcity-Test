@@ -125,9 +125,11 @@ mvn test -DsuiteXmlFile=testng-suites/api-suite.xml
 
 echo "Run UI tests"
 mvn test -DsuiteXmlFile=testng-suites/ui-suite.xml
+echo "Current directory: $(pwd)"
+echo "Add swagger-coverage-report"
+chmod +x swagger-coverage-commandline/bin/swagger-coverage-commandline && \
+swagger-coverage-commandline/bin/swagger-coverage-commandline -s "http://$ip:8111/app/rest/swagger.json" -i target/swagger-coverage-output
 
-echo "Generate Swagger-coverage report"
-./swagger-coverage-commandline/bin/swagger-coverage-commandline -s http://$ip:8111/app/rest/swagger.json -i target/swagger-coverage-output
 
 echo "Generate Allure report"
 

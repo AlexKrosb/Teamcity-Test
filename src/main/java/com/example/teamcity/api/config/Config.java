@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class Config {
-    private final static String CONFIG_PROPERTIES = "config.properties";
+public final class Config {
+    private static final String CONFIG_PROPERTIES = "config.properties";
     private static Config config;
     private Properties properties;
 
