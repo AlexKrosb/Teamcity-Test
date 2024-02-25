@@ -17,30 +17,30 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y net-tools
 
       - name: Set up host environment variables
-        # Команда для определения ip адреса для обращения из другого контейнера, рекомендуется в документации Selenoid UI: https://aerokube.com/selenoid-ui/latest/
+
         run: |
           echo "HOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)" >> $GITHUB_ENV
 
+      - name: Setup host config property
+        run: printf "\nhost=$HOST:8111\nbrowser=firefox\nremote=http://$HOST:4444/wd/hub" > src/main/resources/config.properties
 
-      - name: Setup host config.properties
-        run: |
-          echo -e "\n" >> src/main/resources/config.properties
-          echo -e "host=$HOST:8111\n" >> src/main/resources/config.properties
-          cat src/main/resources/config.properties
 
       - name: Pull Selenoid Chrome/Firefox/..
         run: docker pull selenoid/vnc:firefox_89.0
 
+      - name: Display Current Directory
+        run: pwd
+
+      - name: Prepare Selenoid config
+        run: mkdir selenoid && cd selenoid && mkdir config && cp /home/runner/work/Teamcity-Test/Teamcity-Test/infra/browsers.json config/
+
       - name: Run Selenoid
-
-
         run: |
-          docker run -d --name selenoid \
+          cd selenoid && ls && docker run -d --name selenoid \
           -v /var/run/docker.sock:/var/run/docker.sock \
-          -v $(pwd)/infra/:/etc/selenoid/:ro \
+          -v $(pwd)/config:/etc/selenoid/:ro \
           -p 4444:4444 \
           aerokube/selenoid:latest-release
-
 
       - name: Run Selenoid UI
         run: |
@@ -50,7 +50,6 @@ jobs:
           --selenoid-uri http://$HOST:4444
 
       - name: Run TeamCity Server
-
         run: |
           docker run -u 0 -d --name teamcity-server  \
           -v $(pwd)/tmp/teamcity_server/datadir:/data/teamcity_server/datadir \
@@ -58,22 +57,21 @@ jobs:
           -p 8111:8111 \
           jetbrains/teamcity-server:2023.11.1
 
-      - name: Set up TeamCity Server
+      - name: Set execute permissions for mvnw
+        run: chmod +x mvnw
 
+      - name: Set up TeamCity Server
         run: ./mvnw clean test -Dtest=SetupTest#startUpTest
 
       - name: Print Container Logs
         run: |
           docker logs teamcity-server
 
+      - name: Set up superUserToken environment variable
+        run: echo "SUPER_USER_TOKEN=$(docker logs teamcity-server | grep 'Super user authentication token' | tail -n 1 | awk '{print $6}')" >> $GITHUB_ENV
 
-      - name: Set up superUserToken environment variable and config property
-        run: |
-          SUPER_USER_TOKEN=$(docker logs teamcity-server | grep -o 'Super user authentication token: [0-9]*' | awk '{print $NF}')
-            echo "SUPER_USER_TOKEN=$SUPER_USER_TOKEN"
-            echo "$GITHUB_ENV"
-          echo -e "superUserToken=$SUPER_USER_TOKEN\n" >> src/main/resources/config.properties
-          cat src/main/resources/config.properties
+      - name: Set up superUserToken to config.properties
+        run: printf "\nhost=$HOST:8111\nbrowser=firefox\nremote=http://$HOST:4444/wd/hub\nsuperUserToken=$SUPER_USER_TOKEN" > src/main/resources/config.properties
 
       - name: Run TeamCity Agent
         run: |
@@ -83,32 +81,48 @@ jobs:
 
       - name: Set up TeamCity Agent
 
-        run: ./mvnw test -Dtest=SetupTest#setupTeamCityAgentTest
-
+        run: ./mvnw test -Dtest=AgentsAuthorizedTest#authorizeAgentTest
 
       - name: Run API tests
         run: ./mvnw test -DsuiteXmlFile=testng-suites/api-suite.xml
 
+      - name: Run UI tests
+        run: ./mvnw test -DsuiteXmlFile=testng-suites/ui-suite.xml
+
       - name: Load test report history
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: always()
         continue-on-error: true
         with:
-          ref: hometask-3
-          path: github-pages
+            ref: gh-pages
+            path: gh-pages
 
       - name: Build test report
         uses: simple-elf/allure-report-action@v1.7
         if: always()
         with:
-          gh_pages: github-pages
-          allure_history: allure-history
-          allure_results: allure-results
+            gh_pages: gh-pages
+            allure_history: allure-history
+            allure_results: target/allure-results
 
       - name: Publish test report
         uses: peaceiris/actions-gh-pages@v3
         if: always()
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_branch: gh-pages
+            publish_dir: allure-history
+
+      - name: Run Swagger coverage
+        if: always()
+        run:  chmod +x .swagger-coverage-commandline/bin/swagger-coverage-commandline \
+              && .swagger-coverage-commandline/bin/swagger-coverage-commandline -s http://$HOST:8111/app/rest/swagger.json -i target/swagger-coverage-output
+
+      - name: Save Swagger coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+            name: swagger-coverage
+            path: |
+              swagger-coverage-report.html
+              swagger-coverage-results.json
