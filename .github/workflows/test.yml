@@ -92,6 +92,9 @@ jobs:
       - name: Display Current Directory
         run: pwd
 
+      - name: Change permissions
+        run: chmod +x ${{ github.workspace }}/swagger-coverage-commandline/bin/swagger-coverage-commandline
+
       - name: Run Swagger coverage
         if: always()
         run: ${{ github.workspace }}/swagger-coverage-commandline/bin/swagger-coverage-commandline -s http://$HOST:8111/app/rest/swagger.json -i target/swagger-coverage-output
