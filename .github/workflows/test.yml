@@ -79,13 +79,12 @@ jobs:
       - name: Run UI tests
         run: ./mvnw test -DsuiteXmlFile=testng-suites/ui-suite.xml
 
-      - name: Change permissions Swagger
-        run: chmod +x ${{ github.workspace }}/swagger-coverage-commandline/bin/swagger-coverage-commandline
+#      - name: Change permissions Swagger
+#        run: chmod +x ${{ github.workspace }}/swagger-coverage-commandline/bin/swagger-coverage-commandline
 
-      - name: Download Swagger Spec
+      - name: Run Swagger coverage
         if: always()
-        run: curl -o target/swagger-coverage-output/swagger.json http://${{ env.HOST }}:8111/app/rest/swagger.json &&
-            swagger-coverage-commandline/bin/swagger-coverage-commandline -s target/swagger-coverage-output/swagger.json -i target/swagger-coverage-output
+        run: .swagger-coverage-commandline/bin/swagger-coverage-commandline -s http://$HOST:8111/app/rest/swagger.json -i target/swagger-coverage-output
 
       - name: Save Swagger coverage
         uses: actions/upload-artifact@v4
