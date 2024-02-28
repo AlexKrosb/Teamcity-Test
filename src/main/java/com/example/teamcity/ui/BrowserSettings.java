@@ -1,12 +1,17 @@
 package com.example.teamcity.ui;
 
 import com.codeborne.selenide.Configuration;
+import lombok.experimental.UtilityClass;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.String.format;
+
+@UtilityClass
 public class BrowserSettings {
     public static void setup(String browser) {
         Configuration.browser = browser;
