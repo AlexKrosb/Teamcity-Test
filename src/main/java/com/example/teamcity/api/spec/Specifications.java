@@ -16,7 +16,7 @@ import java.util.List;
 
 import static com.github.viclovsky.swagger.coverage.SwaggerCoverageConstants.OUTPUT_DIRECTORY;
 
-public class Specifications {
+public final class Specifications {
     private static Specifications spec;
 
     private Specifications() {
@@ -32,10 +32,10 @@ public class Specifications {
     private RequestSpecBuilder reqBuilder() {
         var requestBuilder = new RequestSpecBuilder();
         requestBuilder.setBaseUri("http://" + Config.getProperty("host"));
-        requestBuilder.addFilter(new RequestLoggingFilter());
-        requestBuilder.addFilter(new ResponseLoggingFilter());
-        requestBuilder.addFilters(List
-                .of(new RequestLoggingFilter(),
+        //requestBuilder.addFilter(new RequestLoggingFilter());
+        //requestBuilder.addFilter(new ResponseLoggingFilter());
+        requestBuilder.addFilters(List.of(
+                        new RequestLoggingFilter(),
                         new ResponseLoggingFilter(),
                         new AllureRestAssured(),
                         new SwaggerCoverageRestAssured(new FileSystemOutputWriter(Paths

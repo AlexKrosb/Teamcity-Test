@@ -5,7 +5,7 @@ import com.example.teamcity.api.spec.Specifications;
 import io.restassured.RestAssured;
 import org.apache.http.HttpStatus;
 
-public class AuthRequest {
+public final class AuthRequest {
 
     private User user;
     public AuthRequest(User user) {
