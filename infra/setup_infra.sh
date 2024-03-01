@@ -41,9 +41,10 @@ done
 echo "Start teamcity server"
 echo "Current directory: $(pwd)"
 
+mkdir $teamcity_server_workdir
 cd $teamcity_server_workdir
 
-current=$(powershell.exe '$PWD -replace "\\","/" -replace "C", "c"')
+current=$(powershell.exe '$PWD -replace "\\", "/" -replace "C", "c"')
 
 docker run -d --name $teamcity_server_container_name  \
     -v $current/logs:/opt/teamcity/logs  \
@@ -56,18 +57,27 @@ echo "Teamcity Server is running..."
 echo "Start selenoid"
 echo "Current directory: $(pwd)"
 
-cd .. && cd selenoid_workdir
+cd ..
+
+mkdir $selenoid_workdir
+cd $selenoid_workdir
 mkdir config
+
+cd ..
+cd ..
+teamcity_tests_directory=$(pwd)
+cd $teamcity_tests_directory/teamcity_tests_infrastructure/selenoid/
 cp $teamcity_tests_directory/infra/browsers.json config/
-current=$(powershell.exe '$PWD -replace "\\","/" -replace "C", "c"')
+selenoid_container_name="selenoid_instance"
+current=$(powershell.exe '$PWD -replace "\\", "/" -replace "C", "c"')
 docker run -d                                   \
             --name $selenoid_container_name                                 \
             -p 4444:4444                                    \
-            -v /var/run/docker.sock:/var/run/docker.sock    \
+            -v //var/run/docker.sock:/var/run/docker.sock    \
             -v $current/config/:/etc/selenoid/:ro              \
     aerokube/selenoid:latest-release
 
-image_names=($(awk -F'"' '/"image": "/{print $4}' "$current/config/browsers.json"))
+image_names=($(awk -F'"' '/"image": "/{print $4}' "$(pwd)/config/browsers.json"))
 
 echo "Pull all browser images: $image_names"
 
@@ -77,14 +87,15 @@ done
 
 ################################
 echo "Start selenoid-ui"
-
+cd ..
+selenoid_ui_container_name="selenoid_ui_instance"
 docker run -d --name $selenoid_ui_container_name \
     -p 80:8080 aerokube/selenoid-ui:latest-release --selenoid-uri "http://$ip:4444"
 
 ################################
 echo "Setup teamcity server"
 
-cd "$teamcity_tests_directory"
+cd ..
 
 echo "Current directory: $(pwd)"
 
@@ -115,3 +126,4 @@ mvn test -DsuiteXmlFile=testng-suites/api-suite.xml
 echo "Run UI tests"
 mvn test -DsuiteXmlFile=testng-suites/ui-suite.xml
 
+read -p "Press any key"
