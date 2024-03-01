@@ -3,6 +3,7 @@
 @buildTypeId = {{$random.alphabetic(10)}}
 
 ### 0. Generate auth token
+
 GET http://admin:admin@localhost:8111/authenticationTest.html?csrf
 Accept: application/json
 
@@ -11,6 +12,7 @@ Accept: application/json
 %}
 
 ### 1. Create project
+
 POST http://admin:admin@localhost:8111/app/rest/projects
 Content-Type: application/json
 Accept: application/json
@@ -26,6 +28,7 @@ X-TC-CSRF-Token: {{token}}
 }
 
 ### 2. Create build configuration
+
 POST http://admin:admin@localhost:8111/app/rest/buildTypes
 Content-Type: application/json
 Accept: application/json
@@ -64,6 +67,7 @@ X-TC-CSRF-Token: {{token}}
 }
 
 ### 3. Run build
+
 POST http://admin:admin@localhost:8111/app/rest/buildQueue
 Content-Type: application/json
 Accept: application/json
@@ -76,6 +80,7 @@ X-TC-CSRF-Token: {{token}}
 }
 
 ### 4. Check build status
+
 GET http://admin:admin@localhost:8111/app/rest/buildTypes/id:{{buildTypeId}}/builds/running:true
 Content-Type: application/json
 Accept: application/json
@@ -83,18 +88,21 @@ X-TC-CSRF-Token: {{token}}
 
 
 ### 5. Check project status
+
 GET http://admin:admin@localhost:8111/app/rest/projects/id:TestPjsCLCbFgC
 Content-Type: application/json
 Accept: application/json
 X-TC-CSRF-Token: {{token}}
 
 ### 6. Check project
+
 GET http://admin:admin@localhost:8111/app/rest/projects
 Content-Type: application/json
 Accept: application/json
 X-TC-CSRF-Token: {{token}}
 
 ### 7. GET List Build Configurations of Project
+
 GET http://admin:admin@localhost:8111/app/rest/projects/test_KrZfnmRRje/buildTypes
 Content-Type: application/json
 Accept: application/json
